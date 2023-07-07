@@ -1,5 +1,7 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 class APIs(ABC):
-    pass
+    @abstractmethod
+    def get_vacancies(self):
+        pass

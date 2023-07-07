@@ -1,16 +1,17 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+8 to toggle the breakpoint.
+from src.JSONSaver import JSONSaver
+from src.headHunterAPI import HeadHunterAPI
+from src.superJobAPI import SuperJobAPI
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    # Создание экземпляра класса для работы с API сайтов с вакансиями
+    #hh_api = HeadHunterAPI()
+    superjob_api = SuperJobAPI()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    # Получение вакансий с разных платформ
+    #hh_vacancies = hh_api.get_vacancies("Python")
+    superjob_vacancies = superjob_api.get_vacancies("Python")
+
+    json_saver = JSONSaver()
+    json_saver.save_vacancies(superjob_vacancies)
+
