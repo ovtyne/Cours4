@@ -22,25 +22,31 @@ class SuperJobAPI(APIs):
         response = requests.get(url, headers=headers, params=params).json()
         return response
 
-    def get_vacancies(self, keyword='Python', vac_n=200):
+    def get_vacancies(self, keyword='Python', vac_n=500):
         pages = math.ceil(vac_n / 100)
-        v = {}
+        sj_vacancies = []
         for page in range(pages):
             request = self.get_request(keyword=keyword, page=page)
             if len(request['objects']):
-                v.update(request)
+                sj_vacancies.extend(request['objects'])
 
         vacancies = []
-        if not len(v['objects']):
+        if not len(sj_vacancies):
             return vacancies
 
-        for d in range(len(v)):
+        for v in sj_vacancies:
+            payment_from = v['payment_from']
+            payment_to = v['payment_to']
+            if not isinstance(payment_from, int):
+                payment_from = 0
+            if not isinstance(payment_to, int):
+                payment_to = 0
             vacancy = Vacancies(
-                v['objects'][d]['profession'],
-                v['objects'][d]['link'],
-                v['objects'][d]['payment_from'],
-                v['objects'][d]['payment_to'],
-                v['objects'][d]['candidat'],
+                v['profession'],
+                v['link'],
+                payment_from,
+                payment_to,
+                v['candidat'],
                 'SJ'
             )
             vacancies.append(vacancy)

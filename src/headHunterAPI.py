@@ -20,32 +20,34 @@ class HeadHunterAPI(APIs):
         response = requests.get(url, params).json()  # Посылаем запрос к API
         return response
 
-    def get_vacancies(self, keyword='Python', vac_n=200):
+    def get_vacancies(self, keyword='Python', vac_n=500):
         pages = math.ceil(vac_n/100)
-        v = {}
+        hh_vacancies = []
 
         for page in range(pages):
             request = self.get_request(keyword=keyword, page=page)
             if len(request['items']):
-                v.update(request)
+                hh_vacancies.extend(request['items'])
 
         vacancies = []
 
-        if not len(v['items']):
+        if not len(hh_vacancies):
             return vacancies
 
-        for d in range(len(v)):
-            pay = v['items'][d]['salary']
+        pay = []
+        for v in hh_vacancies:
+            pay_from = 0
+            pay_to = 0
 
-            if pay is None:
-                pay_from = 0
-                pay_to = 0
-            else:
-                pay_from = pay['from']
-                pay_to = pay['to']
+            if isinstance(pay, dict):
+                if type(v['salary']['from']) == int:
+                    pay_from = v['salary']['from']
+                if type(v['salary']['to']) == int:
+                    pay_to = v['salary']['to']
+
             vacancy = Vacancies(
-                v['items'][d]['name'],
-                v['items'][d]['alternate_url'],
+                v['name'],
+                v['alternate_url'],
                 pay_from,
                 pay_to,
                 '',

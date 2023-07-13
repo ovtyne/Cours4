@@ -13,8 +13,8 @@ if __name__ == '__main__':
     keywords = input("Введите ключевые слова для фильтрации вакансий: ").split()
 
     # Получение вакансий с разных платформ
-    vacancies = hh_api.get_vacancies(keywords)
-    sj_vacancies = superjob_api.get_vacancies(keywords)
+    vacancies = hh_api.get_vacancies(keywords, top_n)
+    sj_vacancies = superjob_api.get_vacancies(keywords, top_n)
     vacancies.extend(sj_vacancies)
 
     # Сохранение информации о вакансиях в файл

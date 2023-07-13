@@ -21,10 +21,7 @@ class JSONSaver(Saver):
     def add_vacancy(self, vacancy):
         pass
 
-    def __init__(self):
-        self.file_name = "vacancies.json"
-
-    def save_vacancies(self, vacancies):
-        with open(self.file_name, "w") as write_file:
+    def save_vacancies(self, vacancies, file_name='vacancies.json'):
+        with open(file_name, "w") as write_file:
             json.dump(vacancies, write_file, indent=2, ensure_ascii=False, cls=VacanciesEncoder)
 
