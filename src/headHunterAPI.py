@@ -1,12 +1,13 @@
-import json
+import math
 import requests
 
+from src.vacancies import Vacancies
 from src.APIs import APIs
 
 
 class HeadHunterAPI(APIs):
-    def get_request(self, keyword='python', page=0):
-        url = "https://api.hh.ru/"
+    def get_request(self, keyword='Python', page=0):
+        url = "https://api.hh.ru/vacancies"
 
         params = {
             'text': f'NAME:{keyword}',  # Текст фильтра.
@@ -16,14 +17,40 @@ class HeadHunterAPI(APIs):
             'archive': False
         }
 
-        response = requests.get('https://api.hh.ru/vacancies', params).json()  # Посылаем запрос к API
-        data = json.dumps(response, indent=2, ensure_ascii=False)
-        return data
+        response = requests.get(url, params).json()  # Посылаем запрос к API
+        return response
 
-    def get_vacancies(self, keyword='python', pages=1):
+    def get_vacancies(self, keyword='Python', vac_n=200):
+        pages = math.ceil(vac_n/100)
         v = {}
 
         for page in range(pages):
-            v.update(self.get_request(page))
+            request = self.get_request(keyword=keyword, page=page)
+            if len(request['items']):
+                v.update(request)
 
-        return v
+        vacancies = []
+
+        if not len(v['items']):
+            return vacancies
+
+        for d in range(len(v)):
+            pay = v['items'][d]['salary']
+
+            if pay is None:
+                pay_from = 0
+                pay_to = 0
+            else:
+                pay_from = pay['from']
+                pay_to = pay['to']
+            vacancy = Vacancies(
+                v['items'][d]['name'],
+                v['items'][d]['alternate_url'],
+                pay_from,
+                pay_to,
+                '',
+                'HH'
+            )
+            vacancies.append(vacancy)
+
+        return vacancies
