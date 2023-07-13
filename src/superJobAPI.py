@@ -1,7 +1,9 @@
 import json
+import math
 import requests
 
 from src.APIs import APIs
+from src.vacancies import Vacancies
 
 
 class SuperJobAPI(APIs):
@@ -18,15 +20,29 @@ class SuperJobAPI(APIs):
            "X-Api-App-Id": "v3.r.137664768.383c01e40472d7c7e7446757f89483fa8bb087c2.28fd07e1e3f67bd823f92eabcebab429ba983aef"
         }
         response = requests.get(url, headers=headers, params=params).json()
-        print(type(response))
         return response
 
-    def get_vacancies(self, keyword='Python', pages=1):
+    def get_vacancies(self, keyword='Python', vac_n=200):
+        pages = math.ceil(vac_n / 100)
         v = {}
         for page in range(pages):
-            v.update(self.get_request(keyword=keyword, page=page))
+            request = self.get_request(keyword=keyword, page=page)
+            if len(request['objects']):
+                v.update(request)
 
-        vacancies = json.dumps(v, ensure_ascii=False, indent=2)
+        vacancies = []
+        if not len(v['objects']):
+            return vacancies
 
-        print(vacancies)
+        for d in range(len(v)):
+            vacancy = Vacancies(
+                v['objects'][d]['profession'],
+                v['objects'][d]['link'],
+                v['objects'][d]['payment_from'],
+                v['objects'][d]['payment_to'],
+                v['objects'][d]['candidat'],
+                'SJ'
+            )
+            vacancies.append(vacancy)
+
         return vacancies
