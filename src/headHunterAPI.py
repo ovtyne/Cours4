@@ -6,26 +6,28 @@ from src.APIs import APIs
 
 
 class HeadHunterAPI(APIs):
-    def get_request(self, keyword='Python', page=0):
+    def get_request(self, keywords, page=0):
+        """подключается к API и получает вакансии с применением фильтра"""
         url = "https://api.hh.ru/vacancies"
 
         params = {
-            'text': f'NAME:{keyword}',  # Текст фильтра.
             'area': 1,  # Поиск ощуществляется по вакансиям города Москва
             'page': page,  # Индекс страницы поиска на HH
             'per_page': 100,  # Кол-во вакансий на 1 странице
-            'archive': False
+            'archive': False,
+            'text': f'{keywords}'
         }
 
         response = requests.get(url, params).json()  # Посылаем запрос к API
         return response
 
-    def get_vacancies(self, keyword='Python', vac_n=200):
+    def get_vacancies(self, keywords, vac_n=100):
+        """олучает вакансии, оставляет только нужные данные и возвращает список вакансий"""
         pages = math.ceil(vac_n/100)
         v = {}
 
         for page in range(pages):
-            request = self.get_request(keyword=keyword, page=page)
+            request = self.get_request(keywords, page=page)
             if len(request['items']):
                 v.update(request)
 
@@ -41,8 +43,9 @@ class HeadHunterAPI(APIs):
                 pay_from = 0
                 pay_to = 0
             else:
-                pay_from = pay['from']
-                pay_to = pay['to']
+                pay_from = 0 if pay['from'] is None else pay['from']
+                pay_to = 0 if pay['to'] is None else pay['to']
+
             vacancy = Vacancies(
                 v['items'][d]['name'],
                 v['items'][d]['alternate_url'],

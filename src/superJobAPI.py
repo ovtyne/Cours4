@@ -1,4 +1,4 @@
-import json
+import secret_key
 import math
 import requests
 
@@ -7,26 +7,27 @@ from src.vacancies import Vacancies
 
 
 class SuperJobAPI(APIs):
-    def get_request(self, keyword='Python', page=0):
+    def get_request(self, keywords, page=0):
+        """подключается к API и получает вакансии с применением фильтра"""
         url = "https://api.superjob.ru/2.0/vacancies/"
 
         params = {
             "count": 100,
             "page": page,
-            "keyword": keyword,
-            "archive": False
+            "archive": False,
+            'keywords': f'{keywords}'
         }
-        headers = {
-           "X-Api-App-Id": "v3.r.137664768.383c01e40472d7c7e7446757f89483fa8bb087c2.28fd07e1e3f67bd823f92eabcebab429ba983aef"
-        }
+        #код, получаемый с HeadHunter при регистрации, сохраненный в файле secret_key.py
+        headers = secret_key
         response = requests.get(url, headers=headers, params=params).json()
         return response
 
-    def get_vacancies(self, keyword='Python', vac_n=200):
+    def get_vacancies(self, keywords, vac_n=100):
+        """олучает вакансии, оставляет только нужные данные и возвращает список вакансий"""
         pages = math.ceil(vac_n / 100)
         v = {}
         for page in range(pages):
-            request = self.get_request(keyword=keyword, page=page)
+            request = self.get_request(keywords, page=page)
             if len(request['objects']):
                 v.update(request)
 
@@ -35,11 +36,17 @@ class SuperJobAPI(APIs):
             return vacancies
 
         for d in range(len(v)):
+            pay_from = 0
+            pay_to = 0
+            if isinstance(v['objects'][d]['payment_from'], int):
+                pay_from = v['objects'][d]['payment_from']
+            if isinstance(v['objects'][d]['payment_to'], int):
+                pay_to = v['objects'][d]['payment_to']
             vacancy = Vacancies(
                 v['objects'][d]['profession'],
                 v['objects'][d]['link'],
-                v['objects'][d]['payment_from'],
-                v['objects'][d]['payment_to'],
+                pay_from,
+                pay_to,
                 v['objects'][d]['candidat'],
                 'SJ'
             )

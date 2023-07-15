@@ -2,14 +2,12 @@ from abc import ABC, abstractmethod
 
 
 class Saver(ABC):
+    """абстрактный класс, который обязывает реализовать методы для добавления вакансий в файл, получения данных из файла """
     @abstractmethod
-    def add_vacancy(self, vacancy):
+    def save_vacancies(self, vacancies):
         pass
 
     @abstractmethod
-    def get_vacancies_by_salary(self, salary):
+    def load_vacancies(self):
         pass
 
-    @abstractmethod
-    def delete_vacancy(self, vacancy):
-        pass

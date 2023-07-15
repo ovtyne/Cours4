@@ -1,30 +1,35 @@
 import json
+from os import path
+
 from src.saver import Saver
 from src.vacancies import Vacancies
 
 
-class VacanciesEncoder(json.JSONEncoder):
-    def default(self, z):
-        if isinstance(z, Vacancies):
-            return z.title, z.url, z.payment_from, z.payment_to, z.description, z.platform
-        else:
-            super().default(self, z)
+def is_complex(z):
+    """Служебная функция для работы метода десериализации JSON"""
+    return Vacancies(
+            z['title'],
+            z['url'],
+            z['payment_from'],
+            z['payment_to'],
+            z['description'],
+            z['platform']
+    )
 
 
 class JSONSaver(Saver):
-    def get_vacancies_by_salary(self, salary):
-        pass
+    """класс для сохранения информации о вакансиях в JSON-файл"""
+    def save_vacancies(self, vacancies, filename="vacancies.json"):
+        """метод для сохранения информации о вакансиях в JSON-файл"""
+        with open(filename, "w") as write_file:
+            json.dump(vacancies, write_file, indent=2, ensure_ascii=False, default=lambda x: x.__dict__)
 
-    def delete_vacancy(self, vacancy):
-        pass
+    def is_file_saved(self, filename="vacancies.json"):
+        """Проверка, существует ли файл с ранее сохраненными вакансиями"""
+        return path.exists(filename)
 
-    def add_vacancy(self, vacancy):
-        pass
-
-    def __init__(self):
-        self.file_name = "vacancies.json"
-
-    def save_vacancies(self, vacancies):
-        with open(self.file_name, "w") as write_file:
-            json.dump(vacancies, write_file, indent=2, ensure_ascii=False, cls=VacanciesEncoder)
+    def load_vacancies(self, filename="vacancies.json"):
+        """метод для загрузки информации о вакансиях из JSON-файла"""
+        with open(filename, "r") as file:
+            return json.load(file, object_hook=is_complex)
 
