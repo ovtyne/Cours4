@@ -23,8 +23,10 @@ def user_i(vacancies):
             return
         elif com == '1':  # sort asc
             vacancies = Vacancies.sort_vacancies_by_payment(vacancies, False)
+            print('\n\tДанные отсортированы по возрастанию зарплаты')
         elif com == '2':  # sort dsc
             vacancies = Vacancies.sort_vacancies_by_payment(vacancies)
+            print('\n\tДанные отсортированы по убыванию зарплаты')
         elif com == '3':  # print top n
             print_n = int(input("\n\tВведите количество вакансий для вывода: "))
             Vacancies.print_top_vacancies(vacancies, print_n)
