@@ -1,7 +1,7 @@
 from src.JSONSaver import JSONSaver
 from src.headHunterAPI import HeadHunterAPI
 from src.superJobAPI import SuperJobAPI
-from src.vacancies import Vacancies
+from src.user_i import user_i
 
 if __name__ == '__main__':
     json_saver = JSONSaver()
@@ -14,7 +14,6 @@ if __name__ == '__main__':
     answer = "y"
     if json_saver.is_file_saved():
         answer = input("загрузить данные из файла? (д/н)").lower()
-    top_n = int(input("Введите количество вакансий для вывода: "))
     keywords = input("Введите ключевые слова для фильтрации вакансий: ").split()
 
     if answer in ('y', 'д', 'да'):
@@ -31,10 +30,6 @@ if __name__ == '__main__':
     if not vacancies:
         print("Нет вакансий, соответствующих заданным критериям.")
 
-    #Сортировка вакансий и вывод на экран избранного
-    top_vacancies = Vacancies.get_top_vacancies_by_payment(vacancies, top_n)
-    Vacancies.print_vacancies(top_vacancies)
+    user_i(vacancies)
 
-    #Сохранение избранных вакансий в файл
-    json_saver.save_vacancies(top_vacancies, "FilteredVacancies.json")
 

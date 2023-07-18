@@ -1,4 +1,3 @@
-import secret_key
 import math
 import requests
 
@@ -17,8 +16,11 @@ class SuperJobAPI(APIs):
             "archive": False,
             'keywords': f'{keywords}'
         }
-        #код, получаемый с HeadHunter при регистрации, сохраненный в файле secret_key.py
-        headers = secret_key
+        # код, получаемый с HeadHunter при регистрации, сохраненный в файле secret_key.py
+        headers = {
+            "X-Api-App-Id": "v3.r.137664768.383c01e40472d7c7e7446757f89483fa8bb087c2"
+                            ".28fd07e1e3f67bd823f92eabcebab429ba983aef"
+        }
         response = requests.get(url, headers=headers, params=params).json()
         return response
 
